@@ -16,6 +16,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -29,36 +30,119 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import plant.Plant;
 
+/**
+ * 
+ * @author John Espina <espinajohn@myvuw.ac.nz>
+ * @version 1.1
+ * @since 1.0
+ *
+ */
 public class BugWorld extends Application {
 
-	// Attributes of the BugWorld
-	int width = 700;
-	int heigth = 300;
-	Text title = new Text();
-	Text score = new Text("Score");
-	Text moves = new Text("Moves Available");
-	Button up = new Button("North");
-	Button down = new Button ("South");
-	Button left = new Button ("West");
-	Button right = new Button ("East");
-	
-	
-	ArrayList<Bug> bugs = new ArrayList<>();
-	ArrayList<Plant> plants = new ArrayList<>();
+	/* Attributes of the BugWorld */
 
-	public VBox addTitle (){
+	// The world will of course include bug and plants
+	private Bug bug;
+	static ArrayList<Plant> plants = new ArrayList<>();
+	static ArrayList<Bug> enemyBugs = new ArrayList<>();
+
+	// Size of the world
+	private int width = 400;
+	private int heigth = 400;
+
+	// Counters for mavailable moves and eaten plants
+	private static int movesAvailable = 30;
+	private static int plantsEaten = 0;
+
+	// Text to appear in different parts of the screen
+	Text title = new Text();
+	Text score = new Text("Plants Eaten:\n" + getPlantsEaten());
+	Text moves = new Text("Moves Available:\n" + getMovesAvailable());
+
+	// Buttons that will control the movement of the bug
+	Button up = new Button("North");
+	Button down = new Button("South");
+	Button left = new Button("West");
+	Button right = new Button("East");
+	Button restart = new Button("Restart");
+
+	/*
+	 * The following are methods that belongs to this class
+	 * 
+	 */
+
+	// Getters.
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeigth() {
+		return heigth;
+	}
+
+	public static int getMovesAvailable() {
+		return movesAvailable;
+	}
+
+	public static int getPlantsEaten() {
+		return plantsEaten;
+	}
+
+	public Bug getBug() {
+		return bug;
+	}
+
+	// Setters.
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setHeigth(int heigth) {
+		this.heigth = heigth;
+	}
+
+	public static void setMovesAvailable(int movesAvailable) {
+		BugWorld.movesAvailable = movesAvailable;
+	}
+
+	public static void setPlantsEaten(int plantsEaten) {
+		BugWorld.plantsEaten = plantsEaten;
+	}
+
+	public void setBug(Bug bug) {
+		this.bug = bug;
+	}
+
+	/**
+	 * The following are methods that will be used for the final frame design of the window pane
+	 * 
+	 */
+
+	/**
+	 * This sets the Title frame.
+	 * Creates a new VBox object with the title Text object and a bug object as children
+	 * @return the VBox object 
+	 */
+	public VBox addTitle() {
+		Bug b2 = new Bug(150, 20, 15, new Speed(-0.3f, -0.3f));
+		Image image2 = new Image("http://nmrwiki.org/wiki/images/7/7d/Bug.png");
 		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(15,15,15,15));
+		vbox.setPadding(new Insets(15, 15, 15, 15));
 		vbox.setStyle("-fx-border-color: darkblue");
-		vbox.setMaxHeight(150);
+		b2.setFill(new ImagePattern(image2));
 		vbox.setAlignment(Pos.CENTER);
 		vbox.getChildren().add(title);
+		vbox.getChildren().add(b2);
 		return vbox;
 	}
-	
-	public GridPane addControls(){
+
+	/**
+	 * This creates a new GridPane that lays out the controls of the bug's direction
+	 * @return GridPane 
+	 */
+	public GridPane addControls() {
 		GridPane controls = new GridPane();
-		controls.setPadding(new Insets (15,15,15,15));
+		controls.setPadding(new Insets(15, 15, 15, 15));
 		controls.setMaxHeight(200);
 		controls.setVgap(5);
 		controls.setHgap(5);
@@ -71,99 +155,226 @@ public class BugWorld extends Application {
 		controls.getChildren().add(left);
 		controls.setConstraints(right, 3, 1);
 		controls.getChildren().add(right);
+		controls.setConstraints(restart, 2, 1);
+		controls.getChildren().add(restart);
 		controls.setAlignment(Pos.CENTER);
 		return controls;
-		
+
 	}
-	
-	public HBox addHbox (Node n){
+
+	/**
+	 * This creates new Hbox layout.
+	 * The Hbox will be used for each side of Border Pane that will be created later.
+	 * @param Requires a node that can be added as children to the HBox
+	 * @return new HBox layout
+	 */
+	public HBox addHbox(Node n) {
 		HBox hbox = new HBox();
 		hbox.setAlignment(Pos.CENTER);
 		hbox.setStyle("-fx-border-color: darkblue");
 		hbox.setPrefWidth(250);
 		hbox.getChildren().add(n);
 		return hbox;
-		
-	}
-	
-	public VBox setCenter(Group g){
-		VBox centerpiece = new VBox();
-		centerpiece.setPadding(new Insets(0,0,0,0));
-		centerpiece.setPrefHeight(heigth);
-		centerpiece.setPrefWidth(width);
-		centerpiece.setAlignment(Pos.CENTER);
-		centerpiece.getChildren().add(g);
-		return centerpiece;
-		
+
 	}
 
+//	/**
+//	 * This sets the center
+//	 * @param g
+//	 * @return
+//	 */
+//	public VBox setCenter(Group g) {
+//		VBox centerpiece = new VBox();
+//		centerpiece.setPadding(new Insets(0, 0, 0, 0));
+//		centerpiece.setPrefHeight(getHeigth());
+//		centerpiece.setPrefWidth(getWidth());
+//		centerpiece.setAlignment(Pos.CENTER);
+//		centerpiece.getChildren().add(g);
+//		return centerpiece;
+//
+//	}
+
+	// This method will be called when
+	// movesAvailable is equal to zero
+	public void checkFinalPrompt() {
+		if (movesAvailable == 0) {
+			moves.setText("No more moves available!\nGAME OVER");
+			score.setText("Total plants eaten:\n" + BugWorld.getPlantsEaten());
+			title.setText("GAME OVER!!!");
+		}
+	}
+
+	/*
+	 * This is where the actions happen
+	 * 
+	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		// Bugs
-		Bug b1 = new Bug(100, 100, 15, new Speed(-0.2f, -0.2f));
-		Image image1 = new Image("https://venturebeat.com/wp-content/uploads/2013/05/scared-bug.jpg");
-		b1.setFill(new ImagePattern(image1));
-		Bug b2 = new Bug(150, 200, 15, new Speed(-0.3f, -0.3f));
-		Image image2 = new Image("http://nmrwiki.org/wiki/images/7/7d/Bug.png");
-		b2.setFill(new ImagePattern(image2));
-		Bug b3 = new Bug(200, 100, 15, new Speed(-0.2f, -0.2f));
-		Image image3 = new Image(
-				"https://previews.123rf.com/images/idesign2000/idesign20001205/idesign2000120500366/13496491-Lady-bug-flying-Stock-Vector-cartoon-animals-ladybug.jpg");
-		b3.setFill(new ImagePattern(image3));
-		bugs.add(b1);
-		bugs.add(b2);
-		bugs.add(b3);
+		// Setting the values of movesAvailable to 50
+		// Also setting the value of plantsEaten to 0
+		// These will be the values each time the application is restarted
+		BugWorld.setMovesAvailable(30);
+		BugWorld.setPlantsEaten(0);
+		// Instantiating a new Bug object
+		Bug b1 = new Bug(100, 100, 10, new Speed(-0.2f, -0.2f));
+		// Adding an image to the bug
+		Image image = new Image("http://nmrwiki.org/wiki/images/7/7d/Bug.png");
+		b1.setFill(new ImagePattern(image));
 
-		// Plants
+		// Instantiating plant objects
+		// Random numbers are used to assign x and y position
 		int randomX;
 		int randomY;
-		for (int i = 0; i < 5; i++) {
-			randomX = (int) (Math.random() * 250) + 1;
-			randomY = (int) (Math.random() * 250) + 1;
-			Plant p1 = new Plant(randomX, randomY, 20);
+		for (int i = 0; i < 20; i++) {
+			randomX = (int) (Math.random() * 400);
+			randomY = (int) (Math.random() * 350);
+			Plant p1 = new Plant(randomX, randomY, 10);
 			Image pImage = new Image("https://thumbs.dreamstime.com/z/green-vector-plant-no-mash-8580750.jpg");
 			p1.setFill(new ImagePattern(pImage));
 			plants.add(p1);
 		}
-		// The group of plants and bugs
+
+		// Adding more bugs
+		float randomDx;
+		float randomDy;
+		for (int i = 0; i < 5; i++) {
+			randomX = (int) (Math.random() * 400);
+			randomY = (int) (Math.random() * 350);
+			randomDx = (float) (Math.random() * -0.2f);
+			randomDy = (float) (Math.random() * -0.2f);
+			Bug enemyBug = new Bug(randomX, randomY, 10, new Speed(randomDx, randomDy));
+			Image enemyBugImg = new Image("https://venturebeat.com/wp-content/uploads/2013/05/scared-bug.jpg");
+			enemyBug.setFill(new ImagePattern(enemyBugImg));
+			enemyBugs.add(enemyBug);
+
+		}
+
+		// Grouping the bug and plants
 		Group root = new Group();
 
 		for (Plant p : plants) {
 			root.getChildren().add(p);
 		}
 
-		for (Bug b : bugs) {
-			root.getChildren().add(b);
+		for (Bug b : enemyBugs) {
+			root.getChildren().addAll(b);
 		}
-		
+		root.getChildren().add(b1);
 
-		
+		/*
+		 * 
+		 * The following blocks of code sets up the action for each buttons
+		 * 
+		 */
 
-		KeyFrame frame = new KeyFrame(Duration.millis(16), new BugMovementHandler(bugs, plants , width, heigth));
+		// This sets up action for the up button
+		up.setOnAction(new EventHandler<ActionEvent>() {
 
-		TimelineBuilder.create().cycleCount(javafx.animation.Animation.INDEFINITE).keyFrames(frame).build().play();
-		
+			@Override
+			public void handle(ActionEvent event) {
+				// Everytime a move is made (by clucking direction button)
+				// movesAvailable will be updated
+				setMovesAvailable(getMovesAvailable() - 1);
+				KeyFrame frame = new KeyFrame(Duration.millis(16),
+						new BugMovementHandler(b1, plants, root, getWidth(), getHeigth(), "N"));
+				// cycle count is set to 150 to limit the movement of the bug
+				TimelineBuilder.create().cycleCount(150).keyFrames(frame).build().play();
+				moves.setText("Moves Available:\n" + getMovesAvailable());
+				score.setText("Plants Eaten:\n" + getPlantsEaten());
+				checkFinalPrompt();
+			}
+
+		});
+
+		down.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				setMovesAvailable(getMovesAvailable() - 1);
+				KeyFrame frame = new KeyFrame(Duration.millis(16),
+						new BugMovementHandler(b1, plants, root, getWidth(), getHeigth(), "S"));
+				TimelineBuilder.create().cycleCount(150).keyFrames(frame).build().play();
+				moves.setText("Moves Available:\n" + getMovesAvailable());
+				score.setText("Plants Eaten:\n" + getPlantsEaten());
+				checkFinalPrompt();
+
+			}
+		});
+
+		left.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				setMovesAvailable(getMovesAvailable() - 1);
+				KeyFrame frame = new KeyFrame(Duration.millis(16),
+						new BugMovementHandler(b1, plants, root, getWidth(), getHeigth(), "W"));
+				TimelineBuilder.create().cycleCount(150).keyFrames(frame).build().play();
+				moves.setText("Moves Available:\n" + getMovesAvailable());
+				score.setText("Plants Eaten:\n" + getPlantsEaten());
+				checkFinalPrompt();
+			}
+		});
+
+		right.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				setMovesAvailable(getMovesAvailable() - 1);
+				KeyFrame frame = new KeyFrame(Duration.millis(16),
+						new BugMovementHandler(b1, plants, root, getWidth(), getHeigth(), "E"));
+				TimelineBuilder.create().cycleCount(150).keyFrames(frame).build().play();
+				moves.setText("Moves Available:\n" + getMovesAvailable());
+				score.setText("Plants Eaten:\n" + getPlantsEaten());
+				checkFinalPrompt();
+			}
+		});
+
+		restart.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				BugWorld newGame = new BugWorld();
+				try {
+					start(primaryStage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+		});
+
+		// Code to make enemy bugs move
+		KeyFrame enemyFrame = new KeyFrame(Duration.millis(16),
+				new enemyBugHandler(enemyBugs, plants, root, getWidth(), getHeigth()));
+		TimelineBuilder.create().cycleCount(javafx.animation.Animation.INDEFINITE).keyFrames(enemyFrame).build().play();
+
+		/*
+		 * The next block of codes defines the arrangement of each elements in
+		 * the BorderFrame
+		 */
 
 		BorderPane border = new BorderPane();
-		border.setPrefSize(1500, 650);
+		border.setPadding(new Insets(0, 0, 0, 0));
 		border.setRight(addHbox(score));
-		border.setLeft(addHbox(moves));
-		border.setCenter(setCenter(root));
-		
 		border.setBackground(null);
-		
 		title.setFont(new Font(35));
 		title.setText("Bugs Vs Plants");
-		
+		border.setLeft(addHbox(moves));
+		border.setCenter(root);
+		border.setAlignment(root, Pos.CENTER);
 		border.setTop(addTitle());
 		border.setBottom(addControls());
-		
-		
-		
 
+		// This sets the title that will appear on the top left of the window
 		primaryStage.setTitle("Hello Bugs");
 
+		/*
+		 * The next line of code sets the scene and show it
+		 * 
+		 */
 		Scene scene = new Scene(border, 1500, 650);
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -173,5 +384,4 @@ public class BugWorld extends Application {
 		launch();
 
 	}
-
 }
