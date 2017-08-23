@@ -1,5 +1,11 @@
 package bug;
 
+/**
+ * 
+ * @author espinajohn
+ * This class handles the velocity of the bug's movement
+ *
+ */
 public class Speed {
 	
 	private float dx;
