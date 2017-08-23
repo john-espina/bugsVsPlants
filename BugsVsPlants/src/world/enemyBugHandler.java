@@ -8,10 +8,14 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import plant.Plant;
 
-/*
- * This class handles the KeyFrame event from the BugWorld
+/**
  * 
- * */
+ * @author John Espina <espinajohn@myvuw.ac.nz>
+ * @version 1.0
+ * @since 1.0
+ * This class handles the movements of the enemy bugs
+ *
+ */
 public class enemyBugHandler implements EventHandler<ActionEvent> {
 
 	// Attributes
@@ -33,6 +37,9 @@ public class enemyBugHandler implements EventHandler<ActionEvent> {
 
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public void handle(ActionEvent event) {
 
@@ -58,9 +65,6 @@ public class enemyBugHandler implements EventHandler<ActionEvent> {
 			// translateX and translateY is the new position of the bug
 			b.setTranslateX(b.getTranslateX() + b.getS().getDx());
 			b.setTranslateY(b.getTranslateY() + b.getS().getDy());
-
-			// This next section will check if the
-			// bug and the plant is coliding
 
 		}
 	}

@@ -31,11 +31,16 @@ import javafx.util.Duration;
 import plant.Plant;
 
 /**
+ * Creates a world with bugs and plants.
  * 
  * @author John Espina <espinajohn@myvuw.ac.nz>
- * @version 1.1
+ * @version 1.1 Creates a World presented in 2D layout. The world comprises of
+ *          one hero bug, multiple enemy bugs, and multiple plants. The bugs eat
+ *          the plants and allows them to grow their size. If a bigger enemy bug
+ *          intersects with the hero bug, the hero bug's size decreases. If the
+ *          hero bug is bigger, it will reduces the enemy bug's size.
  * @since 1.0
- *
+ * 
  */
 public class BugWorld extends Application {
 
@@ -113,15 +118,17 @@ public class BugWorld extends Application {
 		this.bug = bug;
 	}
 
-	/**
-	 * The following are methods that will be used for the final frame design of the window pane
+	/*
+	 * The following are methods that will be used for the final frame design of
+	 * the window pane
 	 * 
 	 */
 
 	/**
-	 * This sets the Title frame.
-	 * Creates a new VBox object with the title Text object and a bug object as children
-	 * @return the VBox object 
+	 * This sets the Title frame. Creates a new VBox object with the title Text
+	 * object and a bug object as children
+	 * 
+	 * @return VBox object
 	 */
 	public VBox addTitle() {
 		Bug b2 = new Bug(150, 20, 15, new Speed(-0.3f, -0.3f));
@@ -137,8 +144,10 @@ public class BugWorld extends Application {
 	}
 
 	/**
-	 * This creates a new GridPane that lays out the controls of the bug's direction
-	 * @return GridPane 
+	 * This creates a new GridPane that lays out the controls of the bug's
+	 * direction
+	 * 
+	 * @return GridPane
 	 */
 	public GridPane addControls() {
 		GridPane controls = new GridPane();
@@ -163,9 +172,11 @@ public class BugWorld extends Application {
 	}
 
 	/**
-	 * This creates new Hbox layout.
-	 * The Hbox will be used for each side of Border Pane that will be created later.
-	 * @param Requires a node that can be added as children to the HBox
+	 * This creates new Hbox layout. The Hbox will be used for each side of
+	 * Border Pane that will be created later.
+	 * 
+	 * @param Node
+	 *            n that can be added as children to the HBox
 	 * @return new HBox layout
 	 */
 	public HBox addHbox(Node n) {
@@ -178,24 +189,9 @@ public class BugWorld extends Application {
 
 	}
 
-//	/**
-//	 * This sets the center
-//	 * @param g
-//	 * @return
-//	 */
-//	public VBox setCenter(Group g) {
-//		VBox centerpiece = new VBox();
-//		centerpiece.setPadding(new Insets(0, 0, 0, 0));
-//		centerpiece.setPrefHeight(getHeigth());
-//		centerpiece.setPrefWidth(getWidth());
-//		centerpiece.setAlignment(Pos.CENTER);
-//		centerpiece.getChildren().add(g);
-//		return centerpiece;
-//
-//	}
-
-	// This method will be called when
-	// movesAvailable is equal to zero
+	/**
+	 * Checks if movesAvailable is equal to zero
+	 */
 	public void checkFinalPrompt() {
 		if (movesAvailable == 0) {
 			moves.setText("No more moves available!\nGAME OVER");
@@ -204,8 +200,7 @@ public class BugWorld extends Application {
 		}
 	}
 
-	/*
-	 * This is where the actions happen
+	/**
 	 * 
 	 */
 	@Override

@@ -8,10 +8,14 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import plant.Plant;
 
-/*
- * This class handles the KeyFrame event from the BugWorld
+/**
  * 
- * */
+ * @author John Espina <espinajohn@myvuw.ac.nz>
+ * @version 1.1 This class handles the movement of the hero bug object. 
+ * @since 1.0
+ * 
+ *
+ */
 public class BugMovementHandler implements EventHandler<ActionEvent> {
 
 	// Attributes
@@ -34,6 +38,7 @@ public class BugMovementHandler implements EventHandler<ActionEvent> {
 
 	}
 
+	// Constructor
 	public BugMovementHandler(ArrayList<Bug> enemyBugs, Bug b, ArrayList<Plant> plants, Group root, int width,
 			int heigth) {
 		this.bug = b;
@@ -44,6 +49,7 @@ public class BugMovementHandler implements EventHandler<ActionEvent> {
 		this.rootHandler = root;
 	}
 
+	//Constructor
 	public BugMovementHandler(ArrayList<Bug> enemyBugs, ArrayList<Plant> plants, Group root, int width, int heigth) {
 		this.plants = plants;
 		this.width = width;
@@ -53,10 +59,7 @@ public class BugMovementHandler implements EventHandler<ActionEvent> {
 
 	}
 
-	private static void isBugColliding() {
-		boolean bugColliding = false;
-		// for (int i=0; )
-	}
+	
 
 	// Checks if a bug is colliding with a plant
 	private static void eatPlant(Bug bug, ArrayList<Plant> plants) {
